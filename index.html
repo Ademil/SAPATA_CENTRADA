@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP_Sapata Rígida Isolada — NBR 6118</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:        #c8b060;
+      --gold-dim:    #a08040;
+      --gold-faint:  rgba(180,160,100,0.18);
+      --gold-border: rgba(180,160,100,0.25);
+      --bg:          #0e0d0a;
+      --bg-card:     rgba(255,255,255,0.028);
+      --text:        #e8dfc8;
+      --text-muted:  #a09880;
+      --text-dim:    #7a7060;
+      --text-ghost:  #4a4030;
+      --green:       #60c880;
+      --red:         #e05040;
+      --blue:        #60a8d0;
+      --font:        'Courier New', Courier, monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      min-height: 100vh;
+      padding: 32px 16px 60px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--gold-border);
+    }
+    .header .sub {
+      font-size: 10px;
+      letter-spacing: 6px;
+      color: var(--text-ghost);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .header h1 {
+      font-size: 28px;
+      font-weight: normal;
+      letter-spacing: 6px;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .header .tag {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── WRAPPER ── */
+    .wrap { max-width: 900px; margin: 0 auto; }
+
+    /* ── CARD / SECTION ── */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--gold-border);
+      border-radius: 2px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .card-header {
+      background: var(--gold-faint);
+      border-bottom: 1px solid var(--gold-border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-header .icon { font-size: 16px; }
+    .card-header .title {
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+    }
+    .card-body { padding: 18px 22px; }
+
+    /* ── INPUTS GRID ── */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 48px;
+    }
+    @media (max-width: 640px) { .input-grid { grid-template-columns: 1fr; } }
+
+    .input-group-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--text-ghost);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 9px;
+      gap: 8px;
+    }
+    .input-row label {
+      flex: 0 0 200px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .input-row input,
+    .input-row select {
+      width: 108px;
+      background: rgba(255,255,255,0.055);
+      border: 1px solid var(--gold-border);
+      border-radius: 2px;
+      color: var(--text);
+      padding: 5px 10px;
+      font-family: var(--font);
+      font-size: 13px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .input-row input:focus,
+    .input-row select:focus { border-color: var(--gold); }
+    .input-row select { background: #161410; }
+    .input-row .unit {
+      font-size: 11px;
+      color: var(--text-dim);
+      width: 52px;
+    }
+    .input-row .hint {
+      font-size: 10px;
+      color: var(--text-ghost);
+      font-style: italic;
+    }
+
+    /* ── BUTTON ── */
+    .btn-calc {
+      display: block;
+      margin: 0 auto 28px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      border: none;
+      border-radius: 2px;
+      color: #0e0d0a;
+      padding: 13px 52px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+    }
+    .btn-calc:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-calc:active { transform: translateY(0); }
+
+    /* ── STATUS BANNER ── */
+    .banner {
+      text-align: center;
+      padding: 12px 20px;
+      margin-bottom: 24px;
+      border-radius: 2px;
+      font-size: 12px;
+      letter-spacing: 3px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .banner.ok  { background: rgba(60,180,80,.09);  border: 1px solid rgba(60,180,80,.35);  color: var(--green); }
+    .banner.nok { background: rgba(220,60,40,.09);  border: 1px solid rgba(220,60,40,.35);  color: var(--red); }
+
+    /* ── RESULT ROWS ── */
+    .result-row {
+      display: flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      gap: 6px;
+    }
+    .result-row.hl { background: rgba(180,160,100,0.075); }
+    .result-row .rl { flex: 0 0 270px; font-size: 11.5px; color: var(--text-muted); }
+    .result-row .rv {
+      flex: 0 0 160px;
+      font-size: 13px;
+      font-weight: bold;
+      color: var(--text);
+    }
+    .result-row.hl .rv { color: var(--gold); }
+    .result-row .ru { font-size: 10px; font-weight: normal; color: var(--text-dim); margin-left: 2px; }
+    .result-row .badge {
+      font-size: 11px;
+      font-weight: bold;
+      flex: 0 0 60px;
+    }
+    .badge.ok  { color: var(--green); }
+    .badge.nok { color: var(--red); }
+    .result-row .formula {
+      flex: 1;
+      font-size: 10px;
+      color: #5a5040;
+      font-style: italic;
+    }
+
+    /* ── SUMMARY GRID ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+    @media (max-width: 540px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+    .summary-cell {
+      padding: 10px 14px;
+      background: rgba(180,160,100,0.06);
+      border: 1px solid rgba(180,160,100,0.1);
+    }
+    .summary-cell .sk { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase; }
+    .summary-cell .sv { font-size: 13px; font-weight: bold; color: var(--gold); }
+
+    /* ── DIAGRAMS ── */
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 580px) { .diagram-grid { grid-template-columns: 1fr; } }
+    .diagram-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-ghost);
+      text-align: center;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+    .diagram-wrap { overflow-x: auto; text-align: center; }
+
+    /* ── PLACEHOLDER ── */
+    .placeholder {
+      text-align: center;
+      padding: 44px 20px;
+      font-size: 12px;
+      letter-spacing: 3px;
+      color: var(--text-ghost);
+      text-transform: uppercase;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center;
+      margin-top: 36px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--text-ghost);
+    }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: #fff; color: #111; }
+      .btn-calc { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     HEADER
+════════════════════════════════════════════════════════ -->
+<div class="header">
+  <img src="logo01.png" alt="Logo APavan Engenharia" width="75">
+  <div class="sub">Engenharia Civil · Fundações · NBR 6118:2014</div>
+  <h1>Sapata Rígida Isolada</h1> 
+  <div class="tag">Carga Centrada &nbsp;·&nbsp; Método CEB-70 &nbsp;·&nbsp; ABNT NBR 6118</div>
+</div>
+
+<div class="wrap">
+
+  <!-- ═══════════════════════════════
+       DADOS DE ENTRADA
+  ════════════════════════════════ -->
+  <div class="card">
+    <div class="card-header">
+      <span class="icon">⬛</span>
+      <span class="title">Dados de Entrada</span>
+    </div>
+    <div class="card-body">
+      <div class="input-grid">
+
+        <!-- COL 1: CARGAS -->
+        <div>
+          <div class="input-group-label">// Cargas e Solo</div>
+
+          <div class="input-row">
+            <label for="Nk">Carga vertical N<sub>k</sub></label>
+            <input type="number" id="Nk" value="1250" min="1" step="1" />
+            <span class="unit">kN</span>
+            <span class="hint">característico</span>
+          </div>
+
+          <div class="input-row">
+            <label for="Padm">Tensão admissível &sigma;<sub>adm</sub></label>
+            <input type="number" id="Padm" value="0.26" min="0.01" step="0.01" />
+            <span class="unit">MPa</span>
+            <span class="hint">solo</span>
+          </div>
+
+          <div class="input-row">
+            <label for="Kmaj">Fator de majoração K<sub>maj</sub></label>
+            <input type="number" id="Kmaj" value="1.1" min="1" step="0.05" />
+            <span class="unit"></span>
+            <span class="hint">≈ 1,1</span>
+          </div>
+
+          <div class="input-row">
+            <label for="gammaF">Coef. de ponderação &gamma;<sub>f</sub></label>
+            <input type="number" id="gammaF" value="1.4" min="1" step="0.05" />
+            <span class="unit"></span>
+          </div>
+
+          <div class="input-row">
+            <label for="gammaS">Coef. do aço &gamma;<sub>s</sub></label>
+            <input type="number" id="gammaS" value="1.15" min="1" step="0.05" />
+            <span class="unit"></span>
+          </div>
+        </div>
+
+        <!-- COL 2: PILAR & MATERIAIS -->
+        <div>
+          <div class="input-group-label">// Pilar &amp; Materiais</div>
+
+          <div class="input-row">
+            <label for="ap">Seção pilar a<sub>p</sub> (maior)</label>
+            <input type="number" id="ap" value="80" min="5" step="1" />
+            <span class="unit">cm</span>
+          </div>
+
+          <div class="input-row">
+            <label for="bp">Seção pilar b<sub>p</sub> (menor)</label>
+            <input type="number" id="bp" value="20" min="5" step="1" />
+            <span class="unit">cm</span>
+          </div>
+
+          <div class="input-row">
+            <label for="concrete">Concreto</label>
+            <select id="concrete">
+              <option value="C20">C20</option>
+              <option value="C25" selected>C25</option>
+              <option value="C30">C30</option>
+              <option value="C35">C35</option>
+              <option value="C40">C40</option>
+            </select>
+            <span class="unit"></span>
+          </div>
+
+          <div class="input-row">
+            <label for="steel">Aço</label>
+            <select id="steel">
+              <option value="CA-50" selected>CA-50</option>
+              <option value="CA-60">CA-60</option>
+            </select>
+            <span class="unit"></span>
+          </div>
+
+          <div class="input-row">
+            <label for="cov">Cobrimento nominal c</label>
+            <input type="number" id="cov" value="4" min="2" step="0.5" />
+            <span class="unit">cm</span>
+          </div>
+
+          <div class="input-row">
+            <label for="phi">Diâm. barra flexão &phi;</label>
+            <input type="number" id="phi" value="16" min="6" step="2" />
+            <span class="unit">mm</span>
+          </div>
+        </div>
+
+      </div><!-- /input-grid -->
+    </div>
+  </div><!-- /card -->
+
+  <!-- BOTÃO CALCULAR -->
+  <button class="btn-calc" onclick="calcular()">&#9654; Calcular</button>
+
+  <!-- ═══════════════════════════════
+       RESULTADOS (ocultos até calcular)
+  ════════════════════════════════ -->
+  <div id="results" style="display:none;">
+
+    <!-- BANNER DE STATUS -->
+    <div id="banner" class="banner"></div>
+
+    <!-- a) DIMENSÕES -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">📐</span>
+        <span class="title">a) Dimensões da Sapata em Planta</span>
+      </div>
+      <div class="card-body" id="sec-dims"></div>
+    </div>
+
+    <!-- b) ALTURA -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">📏</span>
+        <span class="title">b) Altura da Sapata — Verificação de Rigidez (NBR 6118)</span>
+      </div>
+      <div class="card-body" id="sec-height"></div>
+    </div>
+
+    <!-- c) MOMENTOS -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🔄</span>
+        <span class="title">c) Pressão e Momentos Fletores Solicitantes (CEB-70)</span>
+      </div>
+      <div class="card-body" id="sec-moments"></div>
+    </div>
+
+    <!-- d) ARMADURA -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">🔩</span>
+        <span class="title">d) Armadura de Flexão — Eq. 1.28</span>
+      </div>
+      <div class="card-body" id="sec-steel"></div>
+    </div>
+
+    <!-- e) DIAGONAL -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">⚡</span>
+        <span class="title">e) Verificação da Diagonal Comprimida (Punção)</span>
+      </div>
+      <div class="card-body" id="sec-diag"></div>
+    </div>
+
+    <!-- f) ESBOÇO -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">📊</span>
+        <span class="title">f) Esboço Geométrico</span>
+      </div>
+      <div class="card-body">
+        <div class="diagram-grid">
+          <div>
+            <div class="diagram-label">Planta</div>
+            <div class="diagram-wrap" id="svg-plan"></div>
+          </div>
+          <div>
+            <div class="diagram-label">Corte Transversal (Seção A)</div>
+            <div class="diagram-wrap" id="svg-section"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- g) RESUMO -->
+    <div class="card">
+      <div class="card-header">
+        <span class="icon">📋</span>
+        <span class="title">g) Resumo do Projeto</span>
+      </div>
+      <div class="card-body">
+        <div class="summary-grid" id="sec-summary"></div>
+      </div>
+    </div>
+
+  </div><!-- /results -->
+
+  <!-- PLACEHOLDER INICIAL -->
+  <div class="placeholder" id="placeholder">
+    — Insira os dados e clique em Calcular —
+  </div>
+
+  <div class="footer">
+    Referência: ABNT NBR 6118:2014 &nbsp;·&nbsp; CEB-70 &nbsp;·&nbsp; Sapatas de Fundação
+  </div>
+
+</div><!-- /wrap -->
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT — CÁLCULO COMPLETO
+════════════════════════════════════════════════════════ -->
+<script>
+"use strict";
+
+/* ── Tabelas de materiais ── */
+const CONCRETE = {
+  C20: { fck: 20 },
+  C25: { fck: 25 },
+  C30: { fck: 30 },
+  C35: { fck: 35 },
+  C40: { fck: 40 },
+};
+const STEEL = { "CA-50": 500, "CA-60": 600 };
+
+/* ── Comprimentos de ancoragem básicos (gancho, boa aderência) — Tabela A-7 UNESP
+      Valores aproximados para phi 10-20 mm, C20–C40, CA-50/CA-60              ── */
+const LB_TABLE = {
+  "CA-50": { C20: 47, C25: 38, C30: 32, C35: 28, C40: 25 },
+  "CA-60": { C20: 57, C25: 46, C30: 38, C35: 33, C40: 30 },
+};
+
+/* ── Helpers ── */
+const v  = id => parseFloat(document.getElementById(id).value) || 0;
+const vs = id => document.getElementById(id).value;
+const f2 = n  => n.toFixed(2);
+const f1 = n  => n.toFixed(1);
+const f0 = n  => Math.round(n).toString();
+const ceil5 = n => Math.ceil(n / 5) * 5;
+
+/* ════════════════════════════════════════════════════════
+   FUNÇÃO PRINCIPAL DE CÁLCULO
+════════════════════════════════════════════════════════ */
+function calcular() {
+  /* 1 ─ Ler entradas */
+  const Nk      = v("Nk");
+  const Padm_MP = v("Padm");          // MPa
+  const Kmaj    = v("Kmaj");
+  const gammaF  = v("gammaF");
+  const gammaS  = v("gammaS");
+  const ap_in   = v("ap");            // cm (maior lado pilar)
+  const bp_in   = v("bp");            // cm (menor lado pilar)
+  const concrName = vs("concrete");
+  const steelName = vs("steel");
+  const cov     = v("cov");           // cm, cobrimento
+  const phi_mm  = v("phi");           // mm, diâm. barra
+
+  /* Garantir ap ≥ bp */
+  const ap = Math.max(ap_in, bp_in);  // dimensão maior do pilar
+  const bp = Math.min(ap_in, bp_in);  // dimensão menor do pilar
+
+  const fck  = CONCRETE[concrName].fck; // MPa
+  const fcd  = fck / 1.4;              // MPa (γc = 1,4)
+  const fyk  = STEEL[steelName];        // MPa
+  const fyd  = fyk / gammaS;           // MPa
+
+  /* Conversões: 1 MPa = 0,1 kN/cm² */
+  const Padm = Padm_MP * 0.1;          // kN/cm²
+  const fyd_kNcm2 = fyd * 0.1;        // kN/cm²
+
+  /* ── a) DIMENSÕES ── */
+  const Ssap_est = (Kmaj * Nk) / Padm; // cm²
+
+  /* B (menor lado sapata) — balançcos iguais (cA = cB)
+     Equação: B = ½(bp-ap) + √[¼(bp-ap)² + Ssap]
+     Como bp < ap, (bp-ap) é negativo → B menor que A                    */
+  const diff    = bp - ap;             // negativo
+  const B_raw   = 0.5 * diff + Math.sqrt(0.25 * diff * diff + Ssap_est);
+  const B       = ceil5(B_raw);
+  const A       = B + (ap - bp);       // A - B = ap - bp  (Eq. 1.5)
+
+  const Ssap_real = A * B;
+  const Ssap_ok   = Ssap_real >= Ssap_est;
+  const cA = (A - ap) / 2;            // balanço direção A
+  const cB = (B - bp) / 2;            // balanço direção B
+
+  /* ── b) ALTURA ── */
+  const lb   = LB_TABLE[steelName][concrName]; // ancoragem básica (cm)
+  const h_flex    = (A - ap) / 3;     // rigidez: h ≥ (A-ap)/3
+  const h_anchor  = lb + cov + (phi_mm / 10); // d > lb → h - c - φ/2 > lb
+  const h_raw     = Math.max(h_flex, h_anchor, 20);
+  const h         = ceil5(h_raw);
+  const d         = h - cov - (phi_mm / 10 / 2 + phi_mm / 10 / 2); // h - c - φ (aprox)
+  // altura útil: d = h - c - 1 (φ=16→1cm raio) → segue o roteiro
+  const d_calc = h - (cov + phi_mm / 10);
+  const d_use  = parseFloat(d_calc.toFixed(1));
+
+  const h0_raw = Math.max(h / 3, 15);
+  const h0     = ceil5(h0_raw);
+
+  const tg_alpha  = (h - h0) / cA;
+  const alpha_deg = Math.atan(tg_alpha) * 180 / Math.PI;
+  const alpha_ok  = alpha_deg <= 30;
+  const rigid     = h >= h_flex;
+
+  /* ── c) MOMENTOS ── */
+  const Nd   = gammaF * Nk;            // kN
+  const pd   = Nd / (A * B);          // kN/cm²
+  const pd_MP = pd * 10;              // MPa
+
+  /* Limites CEB-70: h/2 ≤ cA ≤ 2h */
+  const ceb_ok = cA >= h / 2 && cA <= 2 * h;
+
+  const xA   = cA + 0.15 * ap;       // cm
+  const xB   = cB + 0.15 * bp;       // cm
+
+  const M1Ad = pd * (xA * xA / 2) * B; // kN·cm
+  const M1Bd = pd * (xB * xB / 2) * A; // kN·cm
+
+  /* ── d) ARMADURA ── */
+  const AsA   = M1Ad / (0.85 * d_use * fyd_kNcm2); // cm²
+  const AsB   = M1Bd / (0.85 * d_use * fyd_kNcm2); // cm²
+  const AsA_m = AsA / (B / 100);     // cm²/m
+  const AsB_m = AsB / (A / 100);     // cm²/m
+
+  /* ── e) DIAGONAL COMPRIMIDA ── */
+  const u0       = 2 * (ap + bp);    // cm, perímetro do pilar
+  const Fsd      = Nd;               // kN
+  const tau_sd   = Fsd / (u0 * d_use); // kN/cm²
+  const tau_sd_MP = tau_sd * 10;    // MPa
+
+  const alpha_v  = 1 - fck / 250;
+  const tau_Rd2  = 0.27 * alpha_v * fcd * 0.1; // kN/cm²  (fcd em MPa → kN/cm²)
+  const tau_Rd2_MP = tau_Rd2 * 10;  // MPa
+  const diag_ok  = tau_sd <= tau_Rd2;
+
+  /* ── RESULTADO GLOBAL ── */
+  const allOk = Ssap_ok && rigid && alpha_ok && diag_ok;
+
+  /* ─────────────────────────────────────────────────────
+     RENDERIZAR
+  ───────────────────────────────────────────────────── */
+  document.getElementById("placeholder").style.display = "none";
+  document.getElementById("results").style.display     = "block";
+
+  /* Banner */
+  const banner = document.getElementById("banner");
+  banner.className = "banner " + (allOk ? "ok" : "nok");
+  banner.textContent = allOk
+    ? "✓  Projeto verificado — todos os critérios atendidos"
+    : "⚠  Atenção — verifique os critérios marcados como NOK";
+
+  /* ── Seção a) ── */
+  setSection("sec-dims", [
+    row("Área mínima estimada  S<sub>sap,est</sub>",
+        f0(Ssap_est), "cm²", null,
+        `K<sub>maj</sub>·N<sub>k</sub> / σ<sub>adm</sub> = ${Kmaj}·${Nk} / ${f2(Padm)} = ${f0(Ssap_est)} cm²`),
+    row("Lado menor da sapata  B", f0(B), "cm", null, null, true),
+    row("Lado maior da sapata  A", f0(A), "cm", null, "A = B + (a<sub>p</sub> – b<sub>p</sub>)", true),
+    row("Área real  S<sub>sap</sub>", f0(Ssap_real), "cm²", Ssap_ok,
+        `A·B = ${A}·${B} ≥ ${f0(Ssap_est)} cm²`),
+    row("Balanço  c<sub>A</sub>", f1(cA), "cm", null,
+        `(A – a<sub>p</sub>) / 2 = (${A} – ${ap}) / 2`),
+    row("Balanço  c<sub>B</sub>", f1(cB), "cm", null,
+        `(B – b<sub>p</sub>) / 2 = (${B} – ${bp}) / 2`),
+  ]);
+
+  /* ── Seção b) ── */
+  setSection("sec-height", [
+    row("h<sub>mín</sub> pela rigidez", f1(h_flex), "cm", null,
+        `(A – a<sub>p</sub>) / 3 = (${A} – ${ap}) / 3`),
+    row("Comp. ancoragem básico  ℓ<sub>b</sub>", f0(lb), "cm", null,
+        `${steelName} / ${concrName} — Tabela A-7`),
+    row("Altura adotada  h", f0(h), "cm", rigid,
+        `adotado múltiplo de 5 cm; h ≥ ${f1(h_flex)} cm`, true),
+    row("Altura da face vertical  h<sub>0</sub>", f0(h0), "cm", null,
+        `max(h/3, 15 cm) = max(${f1(h/3)}, 15)`),
+    row("Altura útil  d", f1(d_use), "cm", null,
+        `h – c – φ = ${h} – ${cov} – ${phi_mm/10}`),
+    row("Ângulo de inclinação  α", f1(alpha_deg), "°", alpha_ok,
+        `tg α = (h–h<sub>0</sub>)/c<sub>A</sub> = (${h}–${h0})/${f1(cA)} → α ≤ 30°`),
+    row("Sapata rígida?", rigid ? "SIM" : "NÃO", "", rigid,
+        `h = ${f0(h)} cm ≥ (A–a<sub>p</sub>)/3 = ${f1(h_flex)} cm`),
+  ]);
+
+  /* ── Seção c) ── */
+  setSection("sec-moments", [
+    row("Força de projeto  N<sub>d</sub>", f0(Nd), "kN", null,
+        `γ<sub>f</sub>·N<sub>k</sub> = ${gammaF}·${Nk}`),
+    row("Pressão de cálculo  p<sub>d</sub>", f2(pd_MP), "MPa", null,
+        `N<sub>d</sub>/(A·B) = ${f0(Nd)}/(${A}·${B})`),
+    row("Verificação CEB-70  h/2 ≤ c<sub>A</sub> ≤ 2h", "", "", ceb_ok,
+        `${f1(h/2)} ≤ ${f1(cA)} ≤ ${f1(2*h)} cm`),
+    row("Distância seção ref.  x<sub>A</sub>", f1(xA), "cm", null,
+        `c<sub>A</sub> + 0,15·a<sub>p</sub> = ${f1(cA)} + 0,15·${ap}`),
+    row("Distância seção ref.  x<sub>B</sub>", f1(xB), "cm", null,
+        `c<sub>B</sub> + 0,15·b<sub>p</sub> = ${f1(cB)} + 0,15·${bp}`),
+    row("Momento  M<sub>1A,d</sub>  (dir. A)", f1(M1Ad/100), "kN·m", null,
+        `p<sub>d</sub>·(x<sub>A</sub>²/2)·B = ${f2(pd)}·(${f1(xA)}²/2)·${B}`, true),
+    row("Momento  M<sub>1B,d</sub>  (dir. B)", f1(M1Bd/100), "kN·m", null,
+        `p<sub>d</sub>·(x<sub>B</sub>²/2)·A = ${f2(pd)}·(${f1(xB)}²/2)·${A}`, true),
+  ]);
+
+  /* ── Seção d) ── */
+  setSection("sec-steel", [
+    row("f<sub>yd</sub>  (resistência de cálculo)", f2(fyd_kNcm2), "kN/cm²", null,
+        `f<sub>yk</sub>/γ<sub>s</sub> = ${fyk}/${gammaS} = ${f1(fyd)} MPa = ${f2(fyd_kNcm2)} kN/cm²`),
+    row("A<sub>s,A</sub>  (na direção A)", f2(AsA), "cm²", null,
+        `M<sub>1A,d</sub>/(0,85·d·f<sub>yd</sub>) = ${f0(M1Ad)}/(0,85·${d_use}·${f2(fyd_kNcm2)})`, true),
+    row("A<sub>s,B</sub>  (na direção B)", f2(AsB), "cm²", null,
+        `M<sub>1B,d</sub>/(0,85·d·f<sub>yd</sub>) = ${f0(M1Bd)}/(0,85·${d_use}·${f2(fyd_kNcm2)})`, true),
+    row("A<sub>s,A</sub>  distribuída", f2(AsA_m), "cm²/m", null,
+        `${f2(AsA)} / ${f2(B/100)} m`),
+    row("A<sub>s,B</sub>  distribuída", f2(AsB_m), "cm²/m", null,
+        `${f2(AsB)} / ${f2(A/100)} m`),
+  ]);
+
+  /* ── Seção e) ── */
+  setSection("sec-diag", [
+    row("Perímetro crítico  u<sub>0</sub>", f0(u0), "cm", null,
+        `2·(a<sub>p</sub>+b<sub>p</sub>) = 2·(${ap}+${bp})`),
+    row("Força de cálculo  F<sub>sd</sub>", f0(Fsd), "kN", null,
+        `= N<sub>d</sub> = γ<sub>f</sub>·N<sub>k</sub>`),
+    row("τ<sub>sd</sub>  (cisalhamento atuante)", f2(tau_sd_MP), "MPa", null,
+        `F<sub>sd</sub>/(u<sub>0</sub>·d) = ${f0(Fsd)}/(${u0}·${d_use})`),
+    row("τ<sub>Rd,2</sub>  (resistência)",        f2(tau_Rd2_MP), "MPa", null,
+        `0,27·α<sub>v</sub>·f<sub>cd</sub> = 0,27·(1–${fck}/250)·${f1(fcd)}`),
+    row("Diagonal comprimida  τ<sub>sd</sub> ≤ τ<sub>Rd,2</sub>",
+        `${f2(tau_sd_MP)} ≤ ${f2(tau_Rd2_MP)} MPa`, "", diag_ok,
+        diag_ok ? "Não ocorre esmagamento do concreto" : "REPROVADO — rever geometria", true),
+  ]);
+
+  /* ── Resumo ── */
+  document.getElementById("sec-summary").innerHTML = [
+    ["Dimensões (A × B × h)",   `${A} × ${B} × ${f0(h)} cm`],
+    ["Altura útil d",           `${f1(d_use)} cm`],
+    ["Balanços cA / cB",        `${f1(cA)} cm / ${f1(cB)} cm`],
+    ["As,A (direção A)",        `${f2(AsA)} cm²  (${f2(AsA_m)} cm²/m)`],
+    ["As,B (direção B)",        `${f2(AsB)} cm²  (${f2(AsB_m)} cm²/m)`],
+    ["Diagonal comprimida",     diag_ok ? "✓  Verificada" : "✗  Reprovada"],
+  ].map(([k, vv]) => `
+    <div class="summary-cell">
+      <div class="sk">${k}</div>
+      <div class="sv">${vv}</div>
+    </div>`).join("");
+
+  /* ── Diagramas SVG ── */
+  document.getElementById("svg-plan").innerHTML =
+    svgPlan(A, B, ap, bp, cA, cB, h, d_use);
+  document.getElementById("svg-section").innerHTML =
+    svgSection(A, h, h0, d_use, ap, cA);
+}
+
+/* ════════════════════════════════════════════════════════
+   HELPER — Construir linhas de resultado
+════════════════════════════════════════════════════════ */
+function row(label, value, unit, ok, formula, highlight) {
+  const badgeHtml = ok === null || ok === undefined ? ""
+    : `<span class="badge ${ok ? "ok" : "nok"}">${ok ? "✓ OK" : "✗ NOK"}</span>`;
+  const fmtHtml   = formula ? `<span class="formula">${formula}</span>` : "";
+  const hl        = highlight ? " hl" : "";
+  return `
+    <div class="result-row${hl}">
+      <span class="rl">${label}</span>
+      <span class="rv">${value}<span class="ru">${unit}</span></span>
+      ${badgeHtml}
+      ${fmtHtml}
+    </div>`;
+}
+
+function setSection(id, rows) {
+  document.getElementById(id).innerHTML = rows.join("");
+}
+
+/* ════════════════════════════════════════════════════════
+   SVG — PLANTA DA SAPATA
+════════════════════════════════════════════════════════ */
+function svgPlan(A, B, ap, bp, cA, cB, h, d) {
+  const MAX_PX  = 280;
+  const scale   = MAX_PX / Math.max(A, B);
+  const sw      = A * scale;
+  const sh      = B * scale;
+  const pw      = ap * scale;
+  const ph      = bp * scale;
+  const px      = (sw - pw) / 2;
+  const py      = (sh - ph) / 2;
+  const PAD     = 38;
+
+  const W = sw + PAD * 2;
+  const H = sh + PAD * 2;
+
+  // Linha de armadura (direção A): y = py+ph+8 e y = py-8
+  const ya1 = py + ph + 10;
+  const ya2 = py - 10;
+
+  return `
+  <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="7" stroke="rgba(200,176,96,0.5)" stroke-width="1.5"/>
+      </pattern>
+    </defs>
+    <g transform="translate(${PAD},${PAD})">
+
+      <!-- Sapata -->
+      <rect x="0" y="0" width="${sw}" height="${sh}"
+        fill="rgba(100,90,55,0.14)" stroke="#c8b060" stroke-width="1.4"/>
+
+      <!-- Diagonais de canto a canto do pilar -->
+      <line x1="0"    y1="0"    x2="${px}"      y2="${py}"      stroke="rgba(180,160,100,0.28)" stroke-width="0.9"/>
+      <line x1="${sw}" y1="0"   x2="${px+pw}"   y2="${py}"      stroke="rgba(180,160,100,0.28)" stroke-width="0.9"/>
+      <line x1="0"    y1="${sh}" x2="${px}"      y2="${py+ph}"   stroke="rgba(180,160,100,0.28)" stroke-width="0.9"/>
+      <line x1="${sw}" y1="${sh}" x2="${px+pw}"  y2="${py+ph}"   stroke="rgba(180,160,100,0.28)" stroke-width="0.9"/>
+
+      <!-- Pilar (hachura) -->
+      <rect x="${px}" y="${py}" width="${pw}" height="${ph}"
+        fill="url(#hatch)" stroke="#c8b060" stroke-width="1.4"/>
+
+      <!-- Linha de seção S1A (vertical) -->
+      <line x1="${px + pw*0.15}" y1="${-6}" x2="${px + pw*0.15}" y2="${sh+6}"
+        stroke="rgba(96,168,208,0.5)" stroke-width="1" stroke-dasharray="5,3"/>
+      <text x="${px + pw*0.15 + 3}" y="10" fill="#60a8d0" font-size="9" font-family="Courier New">S₁A</text>
+
+      <!-- Cota A (base) -->
+      <line x1="0"   y1="${sh+18}" x2="${sw}"  y2="${sh+18}" stroke="#c8b060" stroke-width="0.8"/>
+      <line x1="0"   y1="${sh+13}" x2="0"      y2="${sh+23}" stroke="#c8b060" stroke-width="0.8"/>
+      <line x1="${sw}" y1="${sh+13}" x2="${sw}" y2="${sh+23}" stroke="#c8b060" stroke-width="0.8"/>
+      <text x="${sw/2}" y="${sh+30}" text-anchor="middle" fill="#c8b060"
+        font-size="10" font-family="Courier New">A = ${A} cm</text>
+
+      <!-- Cota B (lateral) -->
+      <line x1="${sw+18}" y1="0"    x2="${sw+18}" y2="${sh}"   stroke="#c8b060" stroke-width="0.8"/>
+      <line x1="${sw+13}" y1="0"    x2="${sw+23}" y2="0"       stroke="#c8b060" stroke-width="0.8"/>
+      <line x1="${sw+13}" y1="${sh}" x2="${sw+23}" y2="${sh}"   stroke="#c8b060" stroke-width="0.8"/>
+      <text x="${sw+30}" y="${sh/2}" text-anchor="middle" fill="#c8b060"
+        font-size="10" font-family="Courier New"
+        transform="rotate(-90,${sw+30},${sh/2})">B = ${B} cm</text>
+
+      <!-- cA inferior -->
+      <line x1="0"    y1="${sh+8}" x2="${px}"   y2="${sh+8}" stroke="#6a6050" stroke-width="0.6" stroke-dasharray="3,2"/>
+      <text x="${px/2}" y="${sh+6}" text-anchor="middle" fill="#7a7060" font-size="8.5" font-family="Courier New">cA=${cA.toFixed(0)}</text>
+
+      <!-- pilar dimensão -->
+      <text x="${px + pw/2}" y="${py + ph/2 + 4}" text-anchor="middle"
+        fill="rgba(200,176,96,0.55)" font-size="8.5" font-family="Courier New">${ap}×${bp}</text>
+
+      <!-- h / d info -->
+      <text x="${sw/2}" y="${sh/2 + 3}" text-anchor="middle"
+        fill="rgba(200,176,96,0.22)" font-size="9" font-family="Courier New">h=${h}cm / d=${d.toFixed(0)}cm</text>
+
+    </g>
+  </svg>`;
+}
+
+/* ════════════════════════════════════════════════════════
+   SVG — CORTE TRANSVERSAL
+════════════════════════════════════════════════════════ */
+function svgSection(A, h, h0, d, ap, cA) {
+  const MAX_W   = 260;
+  const scale   = MAX_W / A;
+  const sw      = A * scale;
+  const vscale  = scale * 1.6;        // exagerar altura para visualização
+  const hh      = h  * vscale;
+  const h0h     = h0 * vscale;
+  const pw      = ap * scale;
+  const px      = (sw - pw) / 2;
+  const colH    = 40;                 // altura do pilar acima
+  const PAD_X   = 46;
+  const PAD_Y   = 20;
+
+  const W = sw + PAD_X * 2;
+  const H = hh + colH + PAD_Y * 2 + 30;
+
+  // polígono do corpo da sapata (trapezoidal)
+  const pts = [
+    `${PAD_X},${PAD_Y + colH + hh}`,
+    `${PAD_X + px},${PAD_Y + colH + hh - h0h}`,
+    `${PAD_X + px},${PAD_Y + colH}`,
+    `${PAD_X + px + pw},${PAD_Y + colH}`,
+    `${PAD_X + px + pw},${PAD_Y + colH + hh - h0h}`,
+    `${PAD_X + sw},${PAD_Y + colH + hh}`,
+  ].join(" ");
+
+  const baseY   = PAD_Y + colH + hh;            // base da sapata
+  const topY    = PAD_Y + colH;                 // topo da sapata / base pilar
+  const steelY  = baseY - 8;                    // linha de armadura
+  const dY      = baseY - d * vscale;           // linha da altura útil d
+
+  return `
+  <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="hatch2" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="7" stroke="rgba(200,176,96,0.45)" stroke-width="1.5"/>
+      </pattern>
+      <!-- hatching for soil -->
+      <pattern id="soil" width="8" height="8" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="8" x2="8" y2="0" stroke="rgba(120,100,60,0.3)" stroke-width="1"/>
+      </pattern>
+    </defs>
+
+    <!-- Solo (base) -->
+    <rect x="${PAD_X}" y="${baseY}" width="${sw}" height="14"
+      fill="url(#soil)" stroke="rgba(120,100,60,0.4)" stroke-width="0.8"/>
+
+    <!-- Corpo da sapata -->
+    <polygon points="${pts}"
+      fill="rgba(100,90,55,0.18)" stroke="#c8b060" stroke-width="1.4"/>
+
+    <!-- Pilar -->
+    <rect x="${PAD_X + px}" y="${PAD_Y}" width="${pw}" height="${colH}"
+      fill="url(#hatch2)" stroke="#c8b060" stroke-width="1.4"/>
+
+    <!-- Seta de carga -->
+    <line x1="${PAD_X + sw/2}" y1="${PAD_Y - 14}" x2="${PAD_X + sw/2}" y2="${PAD_Y + 4}"
+      stroke="#c8b060" stroke-width="1.2" marker-end="url(#arr)"/>
+    <text x="${PAD_X + sw/2 + 4}" y="${PAD_Y - 4}" fill="#c8b060" font-size="9" font-family="Courier New">Nk</text>
+
+    <!-- Linha de armadura -->
+    <line x1="${PAD_X + 4}" y1="${steelY}" x2="${PAD_X + sw - 4}" y2="${steelY}"
+      stroke="#60a8d0" stroke-width="1.8" stroke-dasharray="7,3"/>
+
+    <!-- Linha altura útil d -->
+    <line x1="${PAD_X + sw + 4}" y1="${dY}" x2="${PAD_X + sw + 22}" y2="${dY}"
+      stroke="#c8b060" stroke-width="0.7" stroke-dasharray="3,2"/>
+    <line x1="${PAD_X + sw + 4}" y1="${baseY}" x2="${PAD_X + sw + 22}" y2="${baseY}"
+      stroke="#c8b060" stroke-width="0.7"/>
+    <!-- cota d -->
+    <line x1="${PAD_X + sw + 14}" y1="${dY}" x2="${PAD_X + sw + 14}" y2="${baseY}"
+      stroke="#c8b060" stroke-width="0.8"/>
+    <text x="${PAD_X + sw + 22}" y="${(dY + baseY)/2 + 3}" fill="#c8b060" font-size="9" font-family="Courier New">d=${d.toFixed(0)}</text>
+
+    <!-- Cota h (esquerda) -->
+    <line x1="${PAD_X - 14}" y1="${topY}"  x2="${PAD_X - 14}" y2="${baseY}" stroke="#c8b060" stroke-width="0.8"/>
+    <line x1="${PAD_X - 19}" y1="${topY}"  x2="${PAD_X - 9}"  y2="${topY}"  stroke="#c8b060" stroke-width="0.8"/>
+    <line x1="${PAD_X - 19}" y1="${baseY}" x2="${PAD_X - 9}"  y2="${baseY}" stroke="#c8b060" stroke-width="0.8"/>
+    <text x="${PAD_X - 30}" y="${(topY+baseY)/2 + 3}" text-anchor="middle" fill="#c8b060"
+      font-size="9" font-family="Courier New"
+      transform="rotate(-90,${PAD_X-30},${(topY+baseY)/2})">h=${h}</text>
+
+    <!-- Cota h0 (esquerda inferior) -->
+    <line x1="${PAD_X - 4}" y1="${baseY - h0h}" x2="${PAD_X + 0}" y2="${baseY - h0h}"
+      stroke="#a0b060" stroke-width="0.6" stroke-dasharray="3,2"/>
+    <text x="${PAD_X + 3}" y="${baseY - h0h - 2}" fill="#a0b060" font-size="8" font-family="Courier New">h₀=${h0}</text>
+
+    <!-- Ângulo α -->
+    <text x="${PAD_X + px - 18}" y="${PAD_Y + colH + hh - h0h - 10}" fill="rgba(200,176,96,0.6)"
+      font-size="9" font-family="Courier New">α</text>
+
+    <!-- Cota A (base) -->
+    <line x1="${PAD_X}" y1="${baseY+22}" x2="${PAD_X+sw}" y2="${baseY+22}" stroke="#c8b060" stroke-width="0.8"/>
+    <line x1="${PAD_X}" y1="${baseY+17}" x2="${PAD_X}" y2="${baseY+27}" stroke="#c8b060" stroke-width="0.8"/>
+    <line x1="${PAD_X+sw}" y1="${baseY+17}" x2="${PAD_X+sw}" y2="${baseY+27}" stroke="#c8b060" stroke-width="0.8"/>
+    <text x="${PAD_X+sw/2}" y="${baseY+35}" text-anchor="middle" fill="#c8b060"
+      font-size="10" font-family="Courier New">A = ${A} cm</text>
+
+    <!-- Cota cA -->
+    <line x1="${PAD_X}" y1="${baseY+9}" x2="${PAD_X+px}" y2="${baseY+9}" stroke="#7a7060" stroke-width="0.6"/>
+    <text x="${PAD_X+px/2}" y="${baseY+8}" text-anchor="middle" fill="#7a7060" font-size="8" font-family="Courier New">cA</text>
+
+    <!-- Definição da seta -->
+    <defs>
+      <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#c8b060"/>
+      </marker>
+    </defs>
+
+  </svg>`;
+}
+</script>
+</body>
+</html>
